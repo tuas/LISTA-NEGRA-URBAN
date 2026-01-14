@@ -1,343 +1,145 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista Negra Urban | Google Drive Sync</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="css/styles.css">
     <link rel="icon" type="image/x-icon" href="https://img.icons8.com/color/96/000000/google-drive.png">
 </head>
 <body>
-    <!-- Contenedor Principal -->
-    <div class="container">
+    <!-- Contenedor principal -->
+    <div class="app-container">
         <!-- Header -->
         <header class="main-header">
-            <div class="header-content">
-                <h1><i class="fas fa-ban"></i> Lista Negra Urban</h1>
-                <p>Sistema de gestión con sincronización a Google Sheets</p>
-            </div>
-            <div class="header-logo">
-                <i class="fab fa-google-drive"></i>
-            </div>
+            <h1 class="app-title">Gestión de Direcciones</h1>
+            <p class="app-subtitle">Registro y control de deudas</p>
         </header>
-
-        <!-- Panel de Control -->
-        <section class="control-panel">
-            <!-- Búsqueda -->
-            <div class="search-container">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Buscar por nombre, documento, dirección...">
-                </div>
-            </div>
-
-            <!-- Filtros -->
-            <div class="filters-container">
-                <div class="filters">
-                    <button class="filter-btn active" data-filter="all">
-                        <i class="fas fa-list"></i> Todos
-                    </button>
-                    <button class="filter-btn" data-filter="active">
-                        <i class="fas fa-check-circle"></i> Activos
-                    </button>
-                    <button class="filter-btn" data-filter="inactive">
-                        <i class="fas fa-times-circle"></i> Inactivos
-                    </button>
-                    <button class="filter-btn" data-filter="pending">
-                        <i class="fas fa-clock"></i> Pendientes
-                    </button>
-                </div>
-            </div>
-
-            <!-- Controles Drive -->
-            <div class="drive-controls">
-                <button class="btn btn-drive" id="importBtn">
-                    <i class="fas fa-file-import"></i> 
-                    <span class="btn-text">Importar Sheets</span>
-                </button>
-                <button class="btn btn-success" id="syncBtn">
-                    <i class="fas fa-sync-alt"></i>
-                    <span class="btn-text">Sincronizar</span>
-                </button>
-                <button class="btn btn-primary" id="addBtn">
-                    <i class="fas fa-plus"></i>
-                    <span class="btn-text">Agregar</span>
-                </button>
-                <button class="btn btn-warning" id="exportBtn">
-                    <i class="fas fa-file-export"></i>
-                    <span class="btn-text">Exportar</span>
-                </button>
-                <button class="btn btn-config" id="configBtn">
-                    <i class="fas fa-cog"></i>
-                    <span class="btn-text">Configurar</span>
-                </button>
-                <button class="btn btn-report" id="reportBtn">
-                    <i class="fas fa-envelope"></i>
-                    <span class="btn-text">Reporte</span>
-                </button>
+        
+        <!-- Barra de búsqueda -->
+        <section class="search-container">
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" id="searchInput" placeholder=" ">
+                <span class="search-placeholder">Buscar por dirección o teléfono...</span>
             </div>
         </section>
-
-        <!-- Alertas -->
-        <div id="alertContainer" class="alert-container"></div>
-
-        <!-- Tabla de Datos -->
-        <section class="data-section">
-            <div class="table-responsive">
-                <div class="table-header">
-                    <div class="col-id">ID</div>
-                    <div class="col-name">Nombre</div>
-                    <div class="col-doc">Documento</div>
-                    <div class="col-address">Dirección</div>
-                    <div class="col-reason">Motivo</div>
-                    <div class="col-status">Estado</div>
-                    <div class="col-actions">Acciones</div>
-                </div>
-                <div id="dataTable" class="table-body">
-                    <!-- Datos cargados dinámicamente -->
-                </div>
-            </div>
-
-            <!-- Paginación -->
-            <div class="pagination" id="pagination">
-                <!-- Paginación generada dinámicamente -->
-            </div>
-        </section>
-
-        <!-- Estado Vacío -->
-        <div id="emptyState" class="empty-state" style="display: none;">
-            <i class="fas fa-database"></i>
-            <h3>No hay registros</h3>
-            <p>Importa datos desde Google Sheets o agrega un nuevo registro.</p>
-            <button class="btn btn-primary" id="addFirstBtn">
-                <i class="fas fa-plus"></i> Agregar Primer Registro
-            </button>
+        
+        <!-- Contador total -->
+        <div class="total-counter">
+            <div class="total-label">Total</div>
+            <div class="total-value" id="totalValue">1</div>
         </div>
-
-        <!-- Estadísticas -->
-        <div class="stats-container">
-            <div class="stat-card">
-                <div class="stat-icon" style="background-color: #e3f2fd;">
-                    <i class="fas fa-users" style="color: #1976d2;"></i>
+        
+        <!-- Lista de registros -->
+        <section class="records-container" id="recordsContainer">
+            <!-- Registro de ejemplo (igual a la captura) -->
+            <div class="record-card fade-in">
+                <div class="address-section">
+                    <div class="section-label">DIRECCIÓN</div>
+                    <div class="address-text">palacios 2098</div>
                 </div>
-                <div class="stat-info">
-                    <h3 id="totalRecords">0</h3>
-                    <p>Total Registros</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background-color: #e8f5e9;">
-                    <i class="fas fa-check-circle" style="color: #2e7d32;"></i>
-                </div>
-                <div class="stat-info">
-                    <h3 id="activeRecords">0</h3>
-                    <p>Activos</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background-color: #fff3e0;">
-                    <i class="fas fa-clock" style="color: #f57c00;"></i>
-                </div>
-                <div class="stat-info">
-                    <h3 id="pendingRecords">0</h3>
-                    <p>Pendientes</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background-color: #ffebee;">
-                    <i class="fas fa-times-circle" style="color: #c62828;"></i>
-                </div>
-                <div class="stat-info">
-                    <h3 id="inactiveRecords">0</h3>
-                    <p>Inactivos</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Instrucciones -->
-        <section class="instructions">
-            <h3><i class="fas fa-info-circle"></i> Configuración de Google Sheets</h3>
-            <div class="instructions-content">
-                <ol>
-                    <li>Crea una hoja en <a href="https://sheets.google.com" target="_blank">Google Sheets</a></li>
-                    <li>Agrega los encabezados: <code>ID, Nombre, Documento, Dirección, Motivo, Estado</code></li>
-                    <li>Ve a <strong>Archivo → Compartir → Publicar en web</strong> (formato CSV)</li>
-                    <li>Copia el ID de la hoja (parte de la URL entre <code>/d/</code> y <code>/edit</code>)</li>
-                    <li>Pega el ID en la configuración de esta página</li>
-                </ol>
                 
-                <div class="api-config">
-                    <h4><i class="fas fa-key"></i> Configuración Actual</h4>
-                    <div class="config-info">
-                        <p><strong>Sheet ID:</strong> <span id="currentSheetId" class="config-value">No configurado</span></p>
-                        <p><strong>Estado:</strong> <span id="connectionStatus" class="status-badge status-pending">No probado</span></p>
+                <div class="phones-section">
+                    <div class="section-label">TELÉFONOS</div>
+                    <div class="phones-list">
+                        <div class="phone-item">
+                            <i class="fas fa-phone phone-icon"></i>
+                            <span class="phone-number">dsfsdf</span>
+                        </div>
                     </div>
-                    <div class="config-actions">
-                        <button class="btn btn-test" id="testConnectionBtn">
-                            <i class="fas fa-plug"></i> Probar Conexión
-                        </button>
-                        <button class="btn btn-edit" id="editConfigBtn">
-                            <i class="fas fa-edit"></i> Editar Config
-                        </button>
-                    </div>
+                </div>
+                
+                <div class="amount-section">
+                    <div class="amount-label">MONTO IMPAGO</div>
+                    <div class="amount-value">$ 43.434,00</div>
+                </div>
+                
+                <div class="actions-section">
+                    <button class="action-btn edit-btn" onclick="editRecord(1)">
+                        <i class="fas fa-edit"></i>
+                        <span>Editar</span>
+                    </button>
+                    <button class="action-btn delete-btn" onclick="deleteRecord(1)">
+                        <i class="fas fa-trash"></i>
+                        <span>Eliminar</span>
+                    </button>
                 </div>
             </div>
         </section>
-
+        
         <!-- Footer -->
-        <footer class="main-footer">
-            <p>Sistema Lista Negra Urban v1.0 | Todos los reportes se envían automáticamente al administrador</p>
-            <p class="footer-note">
-                <i class="fas fa-shield-alt"></i> 
-                Sistema seguro con correo oculto para todos los usuarios
+        <footer class="app-footer">
+            <p>Sistema Lista Negra Urban | 
+                <a href="https://base44.app" class="footer-link" target="_blank">Edit with Base44</a>
             </p>
         </footer>
     </div>
-
-    <!-- Modales -->
-    <!-- Modal Registro -->
-    <div class="modal" id="recordModal">
-        <div class="modal-content">
+    
+    <!-- Botón flotante para nuevo registro -->
+    <button class="floating-button" id="newRecordBtn">
+        <i class="fas fa-plus"></i>
+    </button>
+    
+    <!-- Modal para nuevo registro -->
+    <div class="modal-overlay" id="recordModal">
+        <div class="modal-container">
             <div class="modal-header">
-                <h3 id="modalTitle">Agregar Nuevo Registro</h3>
-                <button class="close-btn" id="closeModal">&times;</button>
+                <h2 class="modal-title">Nuevo Registro</h2>
             </div>
+            
             <div class="modal-body">
-                <form id="recordForm" class="record-form">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="name"><i class="fas fa-user"></i> Nombre completo *</label>
-                            <input type="text" id="name" required>
+                <form id="recordForm">
+                    <!-- Dirección -->
+                    <div class="form-section">
+                        <label class="form-label">Dirección</label>
+                        <input type="text" class="form-input" placeholder="Ingrese la dirección completa" required>
+                    </div>
+                    
+                    <!-- Teléfonos -->
+                    <div class="form-section">
+                        <label class="form-label">Teléfonos de contacto</label>
+                        <div id="phonesContainer">
+                            <!-- Teléfonos se agregarán aquí -->
                         </div>
-                        <div class="form-group">
-                            <label for="document"><i class="fas fa-id-card"></i> Documento *</label>
-                            <input type="text" id="document" required>
+                        <button type="button" class="add-phone-btn" onclick="addPhoneField()">
+                            <i class="fas fa-plus"></i>
+                            <span>Agregar</span>
+                        </button>
+                        <div class="form-help">
+                            <i class="fas fa-phone"></i>
+                            <span>Ej: +54 11 1234-5678</span>
                         </div>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="address"><i class="fas fa-map-marker-alt"></i> Dirección *</label>
-                            <input type="text" id="address" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="reason"><i class="fas fa-exclamation-circle"></i> Motivo *</label>
-                            <input type="text" id="reason" required>
+                    
+                    <!-- Monto Impago -->
+                    <div class="form-section">
+                        <label class="form-label">Monto Impago</label>
+                        <div class="amount-input-container">
+                            <span class="currency-symbol">$</span>
+                            <input type="number" class="amount-input" value="0.00" step="0.01" min="0" required>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="status"><i class="fas fa-tag"></i> Estado</label>
-                        <select id="status" required>
-                            <option value="active">Activo</option>
-                            <option value="inactive">Inactivo</option>
-                            <option value="pending">Pendiente</option>
-                        </select>
+                    
+                    <!-- Notas -->
+                    <div class="form-section">
+                        <label class="form-label">Notas (opcional)</label>
+                        <textarea class="form-textarea" placeholder="Observaciones adicionales"></textarea>
                     </div>
-                    <input type="hidden" id="recordId">
                 </form>
             </div>
+            
             <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelBtn">Cancelar</button>
-                <button class="btn btn-primary" id="saveBtn">
-                    <i class="fas fa-save"></i> Guardar Registro
+                <button class="submit-btn" onclick="saveRecord()">
+                    <i class="fas fa-save"></i>
+                    <span>Agregar Registro</span>
                 </button>
             </div>
         </div>
     </div>
-
-    <!-- Modal Configuración -->
-    <div class="modal" id="configModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-cogs"></i> Configuración de Google Sheets</h3>
-                <button class="close-btn" id="closeConfigModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="sheetId"><i class="fab fa-google-drive"></i> ID de Google Sheet</label>
-                    <input type="text" id="sheetId" placeholder="Ej: 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms">
-                    <small class="help-text">Copia el ID de la URL de tu hoja</small>
-                </div>
-                
-                <div class="form-group">
-                    <label for="apiKey"><i class="fas fa-key"></i> API Key (Opcional)</label>
-                    <input type="password" id="apiKey" placeholder="Si tienes API Key, ingrésala aquí">
-                    <small class="help-text">Solo necesaria si la hoja no está publicada</small>
-                </div>
-                
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i>
-                    <div>
-                        <strong>Modo simple:</strong> Publica tu hoja en 
-                        <strong>Archivo → Compartir → Publicar en web</strong> y selecciona formato CSV
-                    </div>
-                </div>
-                
-                <div class="admin-config" style="display: none;" id="adminConfig">
-                    <h4><i class="fas fa-user-shield"></i> Configuración de Administrador</h4>
-                    <div class="form-group">
-                        <label for="adminEmail"><i class="fas fa-envelope"></i> Correo Administrador</label>
-                        <input type="email" id="adminEmail" value="admin.listanegra@dominio.com" readonly>
-                        <small class="help-text">Correo fijo para todos los reportes (oculto para usuarios)</small>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelConfigBtn">Cancelar</button>
-                <button class="btn btn-success" id="saveConfigBtn">
-                    <i class="fas fa-save"></i> Guardar Configuración
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Reporte -->
-    <div class="modal" id="reportModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-envelope"></i> Generar Reporte</h3>
-                <button class="close-btn" id="closeReportModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="report-options">
-                    <div class="form-group">
-                        <label><i class="fas fa-calendar"></i> Periodo del Reporte</label>
-                        <select id="reportPeriod">
-                            <option value="today">Hoy</option>
-                            <option value="week">Esta semana</option>
-                            <option value="month">Este mes</option>
-                            <option value="all">Todos los registros</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-filter"></i> Filtrar por Estado</label>
-                        <select id="reportFilter">
-                            <option value="all">Todos los estados</option>
-                            <option value="active">Solo activos</option>
-                            <option value="inactive">Solo inactivos</option>
-                            <option value="pending">Solo pendientes</option>
-                        </select>
-                    </div>
-                    
-                    <div class="alert alert-success">
-                        <i class="fas fa-paper-plane"></i>
-                        <div>
-                            <strong>Enviar a:</strong> admin.listanegra@dominio.com<br>
-                            <small>Este correo está configurado para todos los usuarios</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelReportBtn">Cancelar</button>
-                <button class="btn btn-primary" id="generateReportBtn">
-                    <i class="fas fa-file-pdf"></i> Generar y Enviar Reporte
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Scripts -->
+      <!-- Scripts -->
     <script src="js/app.js"></script>
+ 
 </body>
 </html>
