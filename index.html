@@ -5,14 +5,491 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista Negra Urban | Google Drive Sync</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        :root {
+            --primary-color: #1a237e;
+            --secondary-color: #283593;
+            --danger-color: #c62828;
+            --warning-color: #f9a825;
+            --success-color: #2e7d32;
+            --light-color: #f5f5f5;
+            --dark-color: #212121;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-content p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .control-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 2rem;
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .filter-btn:hover {
+            background-color: #d0d0d0;
+        }
+
+        .filter-btn.active:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .drive-controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #1b5e20;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: var(--dark-color);
+        }
+
+        .btn-warning:hover {
+            background-color: #f57f17;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #b71c1c;
+        }
+
+        .btn-drive {
+            background-color: #0f9d58;
+            color: white;
+        }
+
+        .btn-drive:hover {
+            background-color: #0a7e46;
+        }
+
+        .data-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 1fr 2fr 2fr 2fr 1.5fr 1fr;
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            padding: 15px;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr 2fr 2fr 1.5fr 1fr;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            align-items: center;
+        }
+
+        .table-row:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .table-row:hover {
+            background-color: #f0f0f0;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .status-active {
+            background-color: #e8f5e9;
+            color: var(--success-color);
+        }
+
+        .status-inactive {
+            background-color: #ffebee;
+            color: var(--danger-color);
+        }
+
+        .status-pending {
+            background-color: #fff8e1;
+            color: #ff8f00;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            margin: 0 5px;
+            transition: color 0.3s;
+        }
+
+        .edit-btn {
+            color: var(--primary-color);
+        }
+
+        .edit-btn:hover {
+            color: var(--secondary-color);
+        }
+
+        .delete-btn {
+            color: var(--danger-color);
+        }
+
+        .delete-btn:hover {
+            color: #b71c1c;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 1.5rem;
+        }
+
+        .page-btn {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            background-color: white;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .page-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .page-btn:hover:not(.active) {
+            background-color: #f0f0f0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .instructions {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--box-shadow);
+            margin-top: 2rem;
+        }
+
+        .instructions h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .instructions ol {
+            padding-left: 1.5rem;
+        }
+
+        .instructions li {
+            margin-bottom: 0.8rem;
+        }
+
+        .instructions code {
+            background-color: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success {
+            background-color: #e8f5e9;
+            color: var(--success-color);
+            border-left: 4px solid var(--success-color);
+        }
+
+        .alert-warning {
+            background-color: #fff8e1;
+            color: #ff8f00;
+            border-left: 4px solid #ff8f00;
+        }
+
+        .alert-danger {
+            background-color: #ffebee;
+            color: var(--danger-color);
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #757575;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #bdbdbd;
+        }
+
+        .api-config {
+            background-color: #e3f2fd;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-top: 1rem;
+            border-left: 4px solid #2196f3;
+        }
+
+        .api-config h4 {
+            color: #1565c0;
+            margin-bottom: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .table-header, .table-row {
+                grid-template-columns: repeat(4, 1fr);
+                grid-template-rows: auto auto;
+                gap: 10px;
+            }
+            
+            .table-header .mobile-hidden,
+            .table-row .mobile-hidden {
+                display: none;
+            }
+            
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .control-panel {
+                flex-direction: column;
+            }
+            
+            .search-box {
+                min-width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <header>
             <div class="header-content">
                 <h1><i class="fas fa-ban"></i> Lista Negra Urban</h1>
-                <p>Sistema de gestión con sincronización a Google Drive</p>
+                <p>Sistema de gestión con sincronización a Google Sheets</p>
             </div>
             <div class="logo">
                 <i class="fab fa-google-drive"></i>
@@ -32,7 +509,7 @@
             
             <div class="drive-controls">
                 <button class="btn btn-drive" id="importBtn">
-                    <i class="fas fa-file-import"></i> Importar desde Excel
+                    <i class="fas fa-file-import"></i> Importar desde Google Sheets
                 </button>
                 <button class="btn btn-success" id="syncBtn">
                     <i class="fas fa-sync-alt"></i> Sincronizar con Drive
@@ -42,6 +519,9 @@
                 </button>
                 <button class="btn btn-warning" id="exportBtn">
                     <i class="fas fa-file-export"></i> Exportar a Excel
+                </button>
+                <button class="btn" id="configBtn" style="background-color: #5c6bc0; color: white;">
+                    <i class="fas fa-cog"></i> Configurar API
                 </button>
             </div>
         </div>
@@ -53,7 +533,8 @@
                 <div>ID</div>
                 <div>Nombre</div>
                 <div>Documento</div>
-                <div>Dirección</div>
+                <div class="mobile-hidden">Dirección</div>
+                <div class="mobile-hidden">Motivo</div>
                 <div>Estado</div>
                 <div>Acciones</div>
             </div>
@@ -67,15 +548,23 @@
         </div>
 
         <div class="instructions">
-            <h3><i class="fas fa-info-circle"></i> Instrucciones para usar Google Drive como servidor</h3>
+            <h3><i class="fas fa-info-circle"></i> Instrucciones para usar Google Sheets como servidor</h3>
             <ol>
-                <li>Crea una hoja de cálculo en Google Drive con los siguientes encabezados: <code>ID, Nombre, Documento, Dirección, Motivo, Estado</code></li>
-                <li>Comparte la hoja de cálculo con acceso de "Cualquiera con el enlace puede ver"</li>
+                <li>Crea una hoja de cálculo en Google Drive con los encabezados: <code>ID, Nombre, Documento, Dirección, Motivo, Estado</code></li>
+                <li>Ve a <strong>Archivo → Compartir → Publicar en web</strong> y publica como CSV</li>
                 <li>Copia el ID de la hoja (parte de la URL entre /d/ y /edit)</li>
-                <li>Configura el ID en la función <code>configureGoogleSheet()</code> en el código</li>
-                <li>Usa los botones de "Importar desde Excel" y "Sincronizar con Drive" para mantener actualizados los datos</li>
+                <li>Pega el ID en la configuración de la API en esta página</li>
+                <li>Usa los botones de "Importar desde Google Sheets" para cargar los datos</li>
             </ol>
-            <p><strong>Nota:</strong> Esta es una implementación de demostración. Para producción, necesitarás implementar autenticación OAuth 2.0 y un backend para manejar las credenciales de forma segura.</p>
+            
+            <div class="api-config">
+                <h4><i class="fas fa-key"></i> Configuración actual:</h4>
+                <p><strong>Sheet ID:</strong> <span id="currentSheetId">No configurado</span></p>
+                <p><strong>URL pública:</strong> <span id="currentSheetUrl">No configurado</span></p>
+                <button class="btn" id="testConnectionBtn" style="background-color: #42a5f5; color: white; margin-top: 10px;">
+                    <i class="fas fa-plug"></i> Probar conexión
+                </button>
+            </div>
         </div>
     </div>
 
@@ -122,31 +611,39 @@
         </div>
     </div>
 
-    <!-- Modal para configuración de Google Drive -->
-    <div class="modal" id="driveModal">
+    <!-- Modal para configuración de Google Sheets -->
+    <div class="modal" id="configModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Configuración de Google Drive</h3>
-                <button class="close-btn" id="closeDriveModal">&times;</button>
+                <h3>Configuración de Google Sheets API</h3>
+                <button class="close-btn" id="closeConfigModal">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="sheetId">ID de la hoja de cálculo de Google</label>
+                    <label for="sheetId">ID de la hoja de Google Sheets</label>
                     <input type="text" id="sheetId" placeholder="Ej: 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms">
+                    <small>Para obtener el ID, abre tu hoja de Google Sheets y copia la parte de la URL entre "/d/" y "/edit"</small>
                 </div>
+                
                 <div class="form-group">
-                    <label for="sheetName">Nombre de la hoja</label>
-                    <input type="text" id="sheetName" value="Datos" placeholder="Nombre de la pestaña">
+                    <label for="apiKey">Clave API de Google (opcional para lectura)</label>
+                    <input type="password" id="apiKey" placeholder="Si tienes API Key, ingrésala aquí">
+                    <small>Necesaria solo si la hoja no está publicada en web. Obtén una en <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a></small>
                 </div>
-                <p><small>Para obtener el ID, abre tu hoja de Google Sheets y copia la parte de la URL entre "/d/" y "/edit".</small></p>
+                
                 <div class="alert alert-warning">
                     <i class="fas fa-exclamation-triangle"></i>
-                    <div>Esta función requiere configuración adicional para producción. En esta demo, los datos se almacenan localmente.</div>
+                    <div><strong>Modo simple:</strong> Si publicas tu hoja como "Cualquiera con el enlace puede ver", no necesitas API Key.</div>
+                </div>
+                
+                <div class="alert alert-success">
+                    <i class="fas fa-lightbulb"></i>
+                    <div><strong>Recomendado:</strong> Publica tu hoja en Archivo → Compartir → Publicar en web → Formato CSV</div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn" id="cancelDriveBtn">Cancelar</button>
-                <button class="btn btn-success" id="saveDriveBtn">Guardar Configuración</button>
+                <button class="btn" id="cancelConfigBtn">Cancelar</button>
+                <button class="btn btn-success" id="saveConfigBtn">Guardar Configuración</button>
             </div>
         </div>
     </div>
@@ -158,23 +655,57 @@
             { id: 2, name: "María González", document: "87654321", address: "Av. Siempre Viva 456", reason: "Pagos pendientes", status: "inactive" },
             { id: 3, name: "Carlos López", document: "11223344", address: "Carrera 7 #45-23", reason: "Daños a propiedad", status: "pending" },
             { id: 4, name: "Ana Rodríguez", document: "55667788", address: "Diagonal 80 #12-34", reason: "Incumplimiento de pago", status: "active" },
-            { id: 5, name: "Luis Martínez", document: "99887766", address: "Calle 100 #15-30", reason: "Falsificación de documentos", status: "active" },
-            { id: 6, name: "Sofía Hernández", document: "33445566", address: "Transversal 45 #22-10", reason: "Incidente grave", status: "inactive" },
-            { id: 7, name: "Pedro Sánchez", document: "77889900", address: "Carrera 50 #80-90", reason: "Incumplimiento reiterado", status: "pending" },
-            { id: 8, name: "Laura Díaz", document: "22334455", address: "Av. Boyacá #15-25", reason: "Problemas conductuales", status: "active" }
+            { id: 5, name: "Luis Martínez", document: "99887766", address: "Calle 100 #15-30", reason: "Falsificación de documentos", status: "active" }
         ];
 
         // Variables para la gestión de datos
         let currentFilter = "all";
         let currentPage = 1;
-        const recordsPerPage = 5;
+        const recordsPerPage = 10;
         let editingId = null;
+        
+        // Configuración de Google Sheets
+        let googleSheetConfig = {
+            sheetId: '',
+            apiKey: '',
+            isPublished: false
+        };
+
+        // Cargar configuración guardada
+        function loadConfig() {
+            const savedConfig = localStorage.getItem('googleSheetConfig');
+            if (savedConfig) {
+                googleSheetConfig = JSON.parse(savedConfig);
+                updateConfigDisplay();
+            }
+        }
+
+        // Guardar configuración
+        function saveConfig() {
+            localStorage.setItem('googleSheetConfig', JSON.stringify(googleSheetConfig));
+            updateConfigDisplay();
+        }
+
+        // Actualizar la visualización de la configuración
+        function updateConfigDisplay() {
+            const sheetIdElement = document.getElementById('currentSheetId');
+            const sheetUrlElement = document.getElementById('currentSheetUrl');
+            
+            if (googleSheetConfig.sheetId) {
+                sheetIdElement.textContent = googleSheetConfig.sheetId.substring(0, 20) + '...';
+                sheetUrlElement.innerHTML = `<a href="https://docs.google.com/spreadsheets/d/${googleSheetConfig.sheetId}/edit" target="_blank">Abrir hoja</a>`;
+            } else {
+                sheetIdElement.textContent = 'No configurado';
+                sheetUrlElement.textContent = 'No configurado';
+            }
+        }
 
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', function() {
+            loadConfig();
             renderTable();
             setupEventListeners();
-            showAlert('Sistema listo. Los datos se almacenan localmente en esta demostración.', 'success');
+            showAlert('Sistema listo. Configura Google Sheets para sincronizar datos.', 'success');
         });
 
         // Configurar event listeners
@@ -198,45 +729,244 @@
 
             // Botones de control
             document.getElementById('addBtn').addEventListener('click', openAddModal);
-            document.getElementById('importBtn').addEventListener('click', openDriveModal);
+            document.getElementById('importBtn').addEventListener('click', importFromGoogleSheets);
             document.getElementById('syncBtn').addEventListener('click', syncWithDrive);
             document.getElementById('exportBtn').addEventListener('click', exportToExcel);
+            document.getElementById('configBtn').addEventListener('click', openConfigModal);
+            document.getElementById('testConnectionBtn').addEventListener('click', testGoogleSheetsConnection);
 
             // Modal de registro
             document.getElementById('closeModal').addEventListener('click', closeModal);
             document.getElementById('cancelBtn').addEventListener('click', closeModal);
             document.getElementById('saveBtn').addEventListener('click', saveRecord);
 
-            // Modal de Google Drive
-            document.getElementById('closeDriveModal').addEventListener('click', closeDriveModal);
-            document.getElementById('cancelDriveBtn').addEventListener('click', closeDriveModal);
-            document.getElementById('saveDriveBtn').addEventListener('click', saveDriveConfig);
+            // Modal de configuración
+            document.getElementById('closeConfigModal').addEventListener('click', closeConfigModal);
+            document.getElementById('cancelConfigBtn').addEventListener('click', closeConfigModal);
+            document.getElementById('saveConfigBtn').addEventListener('click', saveConfigToLocalStorage);
         }
+
+        // FUNCIÓN PRINCIPAL: Importar desde Google Sheets
+        async function importFromGoogleSheets() {
+            if (!googleSheetConfig.sheetId) {
+                showAlert('Primero configura el ID de la hoja de Google Sheets.', 'danger');
+                openConfigModal();
+                return;
+            }
+
+            showAlert('Conectando con Google Sheets...', 'warning');
+            
+            try {
+                let data;
+                
+                // Intentar con API Key si está configurada
+                if (googleSheetConfig.apiKey) {
+                    const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${googleSheetConfig.sheetId}/values/A:F?key=${googleSheetConfig.apiKey}`;
+                    const response = await fetch(apiUrl);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Error API: ${response.status}`);
+                    }
+                    
+                    data = await response.json();
+                } else {
+                    // Método alternativo: hoja publicada como CSV
+                    const csvUrl = `https://docs.google.com/spreadsheets/d/${googleSheetConfig.sheetId}/gviz/tq?tqx=out:csv`;
+                    const response = await fetch(csvUrl);
+                    
+                    if (!response.ok) {
+                        throw new Error(`No se pudo acceder a la hoja. Asegúrate de que esté publicada.`);
+                    }
+                    
+                    const csvText = await response.text();
+                    data = parseCSV(csvText);
+                }
+                
+                // Procesar los datos
+                const newRecords = processSheetData(data);
+                records = newRecords;
+                
+                showAlert(`${records.length} registros importados desde Google Sheets`, 'success');
+                renderTable();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert(`Error: ${error.message}. Verifica la configuración.`, 'danger');
+            }
+        }
+
+        // Procesar datos de Google Sheets
+        function processSheetData(data) {
+            const newRecords = [];
+            
+            // Si usamos la API de Google Sheets v4
+            if (data.values) {
+                for (let i = 1; i < data.values.length; i++) {
+                    const row = data.values[i];
+                    if (row && row.length >= 5) {
+                        newRecords.push({
+                            id: parseInt(row[0]) || i,
+                            name: row[1] || '',
+                            document: row[2] || '',
+                            address: row[3] || '',
+                            reason: row[4] || '',
+                            status: (row[5] || 'active').toLowerCase()
+                        });
+                    }
+                }
+            } 
+            // Si parseamos CSV
+            else if (Array.isArray(data)) {
+                data.forEach((row, i) => {
+                    if (i > 0 && row.length >= 5) { // Saltar encabezados
+                        newRecords.push({
+                            id: parseInt(row[0]) || i,
+                            name: row[1] || '',
+                            document: row[2] || '',
+                            address: row[3] || '',
+                            reason: row[4] || '',
+                            status: (row[5] || 'active').toLowerCase()
+                        });
+                    }
+                });
+            }
+            
+            return newRecords;
+        }
+
+        // Parsear CSV
+        function parseCSV(csvText) {
+            const rows = [];
+            const lines = csvText.split('\n');
+            
+            lines.forEach(line => {
+                if (line.trim()) {
+                    // Manejar celdas con comas dentro de comillas
+                    const row = [];
+                    let inQuotes = false;
+                    let currentCell = '';
+                    
+                    for (let i = 0; i < line.length; i++) {
+                        const char = line[i];
+                        
+                        if (char === '"') {
+                            inQuotes = !inQuotes;
+                        } else if (char === ',' && !inQuotes) {
+                            row.push(currentCell.trim());
+                            currentCell = '';
+                        } else {
+                            currentCell += char;
+                        }
+                    }
+                    
+                    row.push(currentCell.trim());
+                    rows.push(row);
+                }
+            });
+            
+            return rows;
+        }
+
+        // Sincronizar con Google Sheets (simulación para demo)
+        async function syncWithDrive() {
+            if (!googleSheetConfig.sheetId) {
+                showAlert('Configura primero Google Sheets.', 'danger');
+                openConfigModal();
+                return;
+            }
+
+            showAlert('Sincronizando... (Esta es una simulación. En producción se subirían los datos)', 'warning');
+            
+            // En producción real, aquí subirías los datos a Google Sheets
+            // usando la API con método POST
+            
+            setTimeout(() => {
+                showAlert('Sincronización simulada completada. Los datos permanecen locales en esta demo.', 'success');
+            }, 1500);
+        }
+
+        // Probar conexión con Google Sheets
+        async function testGoogleSheetsConnection() {
+            if (!googleSheetConfig.sheetId) {
+                showAlert('Configura primero el ID de la hoja.', 'danger');
+                return;
+            }
+
+            showAlert('Probando conexión...', 'warning');
+            
+            try {
+                // Intentar acceder a la hoja pública
+                const testUrl = `https://docs.google.com/spreadsheets/d/${googleSheetConfig.sheetId}/gviz/tq?tqx=out:csv`;
+                const response = await fetch(testUrl);
+                
+                if (response.ok) {
+                    showAlert('✅ Conexión exitosa. La hoja es accesible.', 'success');
+                    googleSheetConfig.isPublished = true;
+                    saveConfig();
+                } else {
+                    showAlert('⚠️ La hoja existe pero podría no estar publicada. Intenta con API Key.', 'warning');
+                }
+            } catch (error) {
+                showAlert('❌ Error de conexión. Verifica el ID o usa API Key.', 'danger');
+            }
+        }
+
+        // Abrir modal de configuración
+        function openConfigModal() {
+            document.getElementById('sheetId').value = googleSheetConfig.sheetId || '';
+            document.getElementById('apiKey').value = googleSheetConfig.apiKey || '';
+            document.getElementById('configModal').style.display = 'flex';
+        }
+
+        // Cerrar modal de configuración
+        function closeConfigModal() {
+            document.getElementById('configModal').style.display = 'none';
+        }
+
+        // Guardar configuración
+        function saveConfigToLocalStorage() {
+            const sheetId = document.getElementById('sheetId').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
+            
+            if (!sheetId) {
+                showAlert('El ID de la hoja es obligatorio.', 'danger');
+                return;
+            }
+            
+            googleSheetConfig.sheetId = sheetId;
+            googleSheetConfig.apiKey = apiKey;
+            
+            saveConfig();
+            showAlert('Configuración guardada correctamente.', 'success');
+            closeConfigModal();
+            
+            // Probar conexión automáticamente
+            setTimeout(() => testGoogleSheetsConnection(), 500);
+        }
+
+        // Resto de funciones (renderTable, saveRecord, exportToExcel, etc.)
+        // ... (mantén todas las otras funciones que ya teníamos)
 
         // Renderizar la tabla con los datos
         function renderTable() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const filteredRecords = records.filter(record => {
-                // Aplicar filtro de búsqueda
                 const matchesSearch = searchTerm === '' || 
                     record.name.toLowerCase().includes(searchTerm) ||
                     record.document.toLowerCase().includes(searchTerm) ||
                     record.address.toLowerCase().includes(searchTerm) ||
                     record.reason.toLowerCase().includes(searchTerm);
                 
-                // Aplicar filtro de estado
                 const matchesFilter = currentFilter === 'all' || record.status === currentFilter;
                 
                 return matchesSearch && matchesFilter;
             });
 
-            // Calcular paginación
             const totalPages = Math.ceil(filteredRecords.length / recordsPerPage);
             const startIndex = (currentPage - 1) * recordsPerPage;
             const endIndex = startIndex + recordsPerPage;
             const pageRecords = filteredRecords.slice(startIndex, endIndex);
 
-            // Renderizar registros
             const tableContainer = document.getElementById('dataTable');
             
             if (pageRecords.length === 0) {
@@ -244,7 +974,7 @@
                     <div class="empty-state">
                         <i class="fas fa-database"></i>
                         <h3>No se encontraron registros</h3>
-                        <p>Intenta con otros términos de búsqueda o agrega un nuevo registro.</p>
+                        <p>${records.length === 0 ? 'No hay datos. Importa desde Google Sheets o agrega manualmente.' : 'Intenta con otros términos de búsqueda.'}</p>
                     </div>
                 `;
                 document.getElementById('pagination').innerHTML = '';
@@ -273,274 +1003,4 @@
 
                 tableHTML += `
                     <div class="table-row">
-                        <div>${record.id}</div>
-                        <div>${record.name}</div>
-                        <div>${record.document}</div>
-                        <div class="mobile-hidden">${record.address}</div>
-                        <div class="mobile-hidden">${record.reason}</div>
-                        <div><span class="status-badge ${statusClass}">${statusText}</span></div>
-                        <div>
-                            <button class="action-btn edit-btn" onclick="editRecord(${record.id})" title="Editar">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="action-btn delete-btn" onclick="deleteRecord(${record.id})" title="Eliminar">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
-
-            tableContainer.innerHTML = tableHTML;
-            renderPagination(totalPages);
-        }
-
-        // Renderizar controles de paginación
-        function renderPagination(totalPages) {
-            const paginationContainer = document.getElementById('pagination');
-            
-            if (totalPages <= 1) {
-                paginationContainer.innerHTML = '';
-                return;
-            }
-
-            let paginationHTML = '';
-            
-            // Botón anterior
-            paginationHTML += `
-                <button class="page-btn ${currentPage === 1 ? 'disabled' : ''}" 
-                        onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-            `;
-            
-            // Números de página
-            for (let i = 1; i <= totalPages; i++) {
-                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
-                    paginationHTML += `
-                        <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">
-                            ${i}
-                        </button>
-                    `;
-                } else if (i === currentPage - 2 || i === currentPage + 2) {
-                    paginationHTML += `<span class="page-btn">...</span>`;
-                }
-            }
-            
-            // Botón siguiente
-            paginationHTML += `
-                <button class="page-btn ${currentPage === totalPages ? 'disabled' : ''}" 
-                        onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            `;
-            
-            paginationContainer.innerHTML = paginationHTML;
-        }
-
-        // Cambiar de página
-        function changePage(page) {
-            currentPage = page;
-            renderTable();
-        }
-
-        // Abrir modal para agregar registro
-        function openAddModal() {
-            editingId = null;
-            document.getElementById('modalTitle').textContent = 'Agregar Nuevo Registro';
-            document.getElementById('recordForm').reset();
-            document.getElementById('recordId').value = '';
-            document.getElementById('recordModal').style.display = 'flex';
-        }
-
-        // Editar registro
-        function editRecord(id) {
-            const record = records.find(r => r.id === id);
-            if (!record) return;
-            
-            editingId = id;
-            document.getElementById('modalTitle').textContent = 'Editar Registro';
-            document.getElementById('name').value = record.name;
-            document.getElementById('document').value = record.document;
-            document.getElementById('address').value = record.address;
-            document.getElementById('reason').value = record.reason;
-            document.getElementById('status').value = record.status;
-            document.getElementById('recordId').value = record.id;
-            
-            document.getElementById('recordModal').style.display = 'flex';
-        }
-
-        // Guardar registro (agregar o editar)
-        function saveRecord() {
-            const name = document.getElementById('name').value.trim();
-            const document = document.getElementById('document').value.trim();
-            const address = document.getElementById('address').value.trim();
-            const reason = document.getElementById('reason').value.trim();
-            const status = document.getElementById('status').value;
-            
-            if (!name || !document || !address || !reason) {
-                showAlert('Por favor completa todos los campos obligatorios.', 'danger');
-                return;
-            }
-            
-            if (editingId) {
-                // Editar registro existente
-                const index = records.findIndex(r => r.id === editingId);
-                if (index !== -1) {
-                    records[index] = { ...records[index], name, document, address, reason, status };
-                    showAlert('Registro actualizado correctamente.', 'success');
-                }
-            } else {
-                // Agregar nuevo registro
-                const newId = records.length > 0 ? Math.max(...records.map(r => r.id)) + 1 : 1;
-                records.push({
-                    id: newId,
-                    name,
-                    document,
-                    address,
-                    reason,
-                    status
-                });
-                showAlert('Registro agregado correctamente.', 'success');
-            }
-            
-            closeModal();
-            renderTable();
-        }
-
-        // Eliminar registro
-        function deleteRecord(id) {
-            if (confirm('¿Estás seguro de que deseas eliminar este registro?')) {
-                records = records.filter(record => record.id !== id);
-                showAlert('Registro eliminado correctamente.', 'success');
-                renderTable();
-            }
-        }
-
-        // Cerrar modal de registro
-        function closeModal() {
-            document.getElementById('recordModal').style.display = 'none';
-        }
-
-        // Abrir modal de configuración de Google Drive
-        function openDriveModal() {
-            document.getElementById('driveModal').style.display = 'flex';
-        }
-
-        // Cerrar modal de Google Drive
-        function closeDriveModal() {
-            document.getElementById('driveModal').style.display = 'none';
-        }
-
-        // Guardar configuración de Google Drive
-        function saveDriveConfig() {
-            const sheetId = document.getElementById('sheetId').value.trim();
-            const sheetName = document.getElementById('sheetName').value.trim() || 'Datos';
-            
-            if (!sheetId) {
-                showAlert('Por favor ingresa el ID de la hoja de cálculo.', 'danger');
-                return;
-            }
-            
-            // En una implementación real, aquí se guardaría la configuración
-            localStorage.setItem('googleSheetId', sheetId);
-            localStorage.setItem('googleSheetName', sheetName);
-            
-            showAlert('Configuración de Google Drive guardada. En una implementación real, ahora podrías sincronizar datos.', 'success');
-            closeDriveModal();
-        }
-
-        // Sincronizar con Google Drive (simulación)
-        function syncWithDrive() {
-            showAlert('Sincronizando con Google Drive...', 'warning');
-            
-            // Simulación de sincronización
-            setTimeout(() => {
-                // En una implementación real, aquí se haría una llamada a la API de Google Sheets
-                showAlert('Sincronización completada. En esta demo, los datos permanecen locales.', 'success');
-            }, 1500);
-        }
-
-        // Exportar a Excel
-        function exportToExcel() {
-            // Crear contenido CSV
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "ID,Nombre,Documento,Dirección,Motivo,Estado\n";
-            
-            records.forEach(record => {
-                let statusText = '';
-                switch(record.status) {
-                    case 'active': statusText = 'Activo'; break;
-                    case 'inactive': statusText = 'Inactivo'; break;
-                    case 'pending': statusText = 'Pendiente'; break;
-                }
-                
-                csvContent += `${record.id},${record.name},${record.document},${record.address},${record.reason},${statusText}\n`;
-            });
-            
-            // Crear enlace de descarga
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "lista_negra_urban.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            showAlert('Datos exportados correctamente como CSV.', 'success');
-        }
-
-        // Mostrar alerta
-        function showAlert(message, type) {
-            const alertContainer = document.getElementById('alertContainer');
-            
-            let alertClass = '';
-            let icon = '';
-            
-            switch(type) {
-                case 'success':
-                    alertClass = 'alert-success';
-                    icon = '<i class="fas fa-check-circle"></i>';
-                    break;
-                case 'warning':
-                    alertClass = 'alert-warning';
-                    icon = '<i class="fas fa-exclamation-triangle"></i>';
-                    break;
-                case 'danger':
-                    alertClass = 'alert-danger';
-                    icon = '<i class="fas fa-times-circle"></i>';
-                    break;
-            }
-            
-            const alertHTML = `
-                <div class="alert ${alertClass}">
-                    ${icon}
-                    <div>${message}</div>
-                </div>
-            `;
-            
-            alertContainer.innerHTML = alertHTML;
-            
-            // Eliminar alerta después de 5 segundos
-            setTimeout(() => {
-                alertContainer.innerHTML = '';
-            }, 5000);
-        }
-
-        // Para una implementación real con Google Sheets API:
-        // Esta función necesitaría configuración OAuth 2.0
-        function configureGoogleSheet() {
-            // En producción, necesitarías:
-            // 1. Credenciales OAuth 2.0 desde Google Cloud Console
-            // 2. Un backend para manejar las credenciales de forma segura
-            // 3. Implementación de la API de Google Sheets v4
-            
-            console.log("Para usar Google Sheets como servidor:");
-            console.log("1. Crea un proyecto en Google Cloud Console");
-            console.log("2. Habilita la API de Google Sheets");
-            console.log("3. Configura las credenciales OAuth 2.0");
-            console.log("4. Implementa la autenticación en un backend seguro");
-        }
-    </script>
-</body>
-</html>
+                        <div>${
